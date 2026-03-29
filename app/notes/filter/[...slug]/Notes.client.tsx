@@ -10,18 +10,14 @@ import { fetchNotes } from '@/lib/api';
 
 import NoteList from '@/components/NoteList/NoteList';
 import Pagination from '@/components/Pagination/Pagination';
-import Modal from '@/components/Modal/Modal';
-import NoteForm from '@/components/NoteForm/NoteForm';
 import SearchBox from '@/components/SearchBox/SearchBox';
 import NoResults from '@/components/NoResults/NoResults';
+
+import Link from 'next/link';
 
 export default function NotesClient({ category }: { category?: NoteTag }) {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
-  const openModal = () => setIsModalOpen(true);
-  const closeModal = () => setIsModalOpen(false);
 
   const updateSearch = useDebouncedCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     setSearch(event.target.value);
@@ -44,22 +40,13 @@ export default function NotesClient({ category }: { category?: NoteTag }) {
     <div className={css.app}>
       <header className={css.toolbar}>
         <SearchBox onChange={updateSearch} />
-
         {totalPages > 1 && <Pagination page={page} totalPages={totalPages} onChange={setPage} />}
-
-        <button className={css.button} onClick={openModal}>
+        <Link href="/notes/action/create" className={css.button}>
           Create note +
-        </button>
-
-        {isModalOpen && (
-          <Modal onClose={closeModal}>
-            <NoteForm onClose={closeModal} />
-          </Modal>
-        )}
+        </Link>
       </header>
-
-      {!isLoading && notes.length === 0 && <NoResults />}
-      {notes.length > 0 && <NoteList notes={notes} />}
+      {!isLoading && data && data.notes.length === 0 && <NoResults />}
+      {!isLoading && notes.length > 0 && <NoteList notes={notes} />}
     </div>
   );
 }
